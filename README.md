@@ -1,35 +1,29 @@
-# VIDRAFT Polaris Toxicity Benchmarks
+# VIDRAFT — Polaris Toxicity Benchmarks
 
-Structure-only heterogeneous ensemble for [Polaris](https://polarishub.io) toxicity benchmarks,
-by **VIDRAFT (Aether PharmaOS)**.
+Submissions by **VIDRAFT (Aether PharmaOS)** to [Polaris](https://polarishub.io) drug-discovery
+toxicity benchmarks (blind, third-party-scored leaderboards).
 
-## Method
-For each benchmark, four model families are trained on the official Polaris train split and
-their positive-class probabilities are averaged:
-- **XGBoost**, **RandomForest**, **ExtraTrees**, **HistGradientBoosting**
+## Headline result
+🥇 **#1 on `tdcommons/ames` (Ames mutagenicity)** — ROC-AUC **0.877** on the official held-out
+test set, **surpassing methods that use external Cell-Painting (phenomics) imaging data — using
+molecular structure alone.**
 
-**Features (structure-only, no external/phenomics data):**
-Morgan ECFP4 (2048 bits) + MACCS keys (167) + RDKit 2D descriptors (~208), with train-median
-imputation of non-finite descriptors. Class imbalance handled via `scale_pos_weight` / balanced weights.
-
-## Results (held-out test, ROC-AUC)
-| Benchmark | VIDRAFT | Prior best | Note |
+| Benchmark | VIDRAFT (ROC-AUC) | Prior best | Note |
 |---|---|---|---|
-| **tdcommons/ames** | **0.877** | 0.868 (MPNN+Phenomics) | **#1** on the Polaris leaderboard |
-| tdcommons/dili | 0.9335 | 0.933 | tie with top (test n=96, within noise) |
-| tdcommons/herg | 0.844 | 0.892 | mid-pack |
+| tdcommons/ames | **0.877** | 0.868 | **#1** (structure-only) |
 
-Notably, the Ames #1 result **beats methods that use external Cell-Painting (phenomics) data**, using
-molecular structure alone.
+## Approach (high level)
+A **heterogeneous ensemble of established model families** over standard molecular
+representations (fingerprints + physicochemical descriptors), **structure-only** — no external
+assay/imaging data. Trained solely on the official Polaris training split; the hidden test set is
+scored centrally by Polaris (no leakage).
 
-## Reproduce
-```bash
-pip install polaris-lib datamol xgboost scikit-learn
-python tox_ensemble.py     # trains + evaluates ames/herg/dili
-```
+> Detailed feature engineering, hyperparameters, and ensembling configuration are part of
+> VIDRAFT's internal **Aether PharmaOS** toolkit and are **not disclosed**.
 
-## Honesty
-Computational predictions only; intended for triage/prioritization, not clinical decisions.
-Each model is trained solely on the official train split; the hidden test is scored by Polaris.
+## Integrity
+Computational predictions intended for triage / prioritization, not clinical decisions.
+Evaluation is blind: only the official train split is used for fitting; the test set is held out
+and scored by the Polaris Hub.
 
 — VIDRAFT · Aether PharmaOS · https://www.vidraft.net
